@@ -1,37 +1,40 @@
 .board {
-    background-color: #ffe462;
-    display: grid;
-    height: min-content;
-    padding: 3em;
+  background-color: #ffe462;
+  display: grid;
+  height: max-content;
+  padding: 3em;
+  width: max-content;
 }
 
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #262626;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: max-content;
+  padding: 6em;
+  width: max-content;
+  flex-grow: 1;
 }
 
 .node {
-    border-left: 3px solid black;
-    border-top: 3px solid black;
-    position: relative;
+  border-left: 3px solid black;
+  border-top: 3px solid black;
+  position: relative;
 }
 
 .stone {
-    border-radius: 50%;
-    height: 4em;
-    width: 4em;
-    position: absolute;
-    top:-2em;
-    left:-2em;
+  border-radius: 50%;
+  height: 4em;
+  width: 4em;
+  position: absolute;
+  top: -2em;
+  left: -2em;
 }
 
 .hidden {
-    opacity: 0
+  opacity: 0;
 }
 
 .hidden:hover {
-    opacity: 0.5;
+  opacity: 0.5;
 }

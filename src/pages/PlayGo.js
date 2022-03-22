@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 
 import "./board.css";
 
-const boardSize = 3;
+const boardSize = 9;
 
-const boardState = [
-  ["black", "white", ""],
-  ["", "", "white"],
-  ["white", "", "black"],
-];
+// const boardState = [
+//   ["black", "white", ""],
+//   ["", "", "white"],
+//   ["white", "", "black"],
+// ];
 
 const PlayGo = () => {
-  const [boardNodes, setBoardNodes] = useState(boardState);
+  const [boardNodes, setBoardNodes] = useState([[]]);
 
   const [activePlayer, setActivePlayer] = useState("white");
 
