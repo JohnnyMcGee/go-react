@@ -16,7 +16,7 @@
   flex-grow: 1;
 }
 
-.node {
+.point {
   border-left: 3px solid black;
   border-top: 3px solid black;
   position: relative;

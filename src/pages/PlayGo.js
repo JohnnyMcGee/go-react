@@ -11,20 +11,20 @@ const boardSize = 9;
 // ];
 
 const PlayGo = () => {
-  const [boardNodes, setBoardNodes] = useState([[]]);
+  const [boardPoints, setBoardPoints] = useState([[]]);
 
   const [activePlayer, setActivePlayer] = useState("white");
 
   const fetchBoard = async () => {
     let data;
     try {
-      const res = await fetch("http://localhost:8080/nodes");
+      const res = await fetch("http://localhost:8080/board");
       data = await res.json();
     } catch (e) {
       console.log(e);
       return;
     }
-    setBoardNodes(data);
+    setBoardPoints(data);
   };
   useEffect(() => fetchBoard(), []);
 
@@ -41,7 +41,7 @@ const PlayGo = () => {
   };
 
   const move = async (x, y) => {
-    const isOpenPoint = boardNodes[y][x] === "";
+    const isOpenPoint = boardPoints[y][x] === "";
     if (isOpenPoint) {
       await postMove({ x: x, y: y, color: activePlayer });
       fetchBoard();
@@ -58,14 +58,14 @@ const PlayGo = () => {
           gridTemplateColumns: `repeat(${boardSize - 1}, 6em) 0`,
         }}
       >
-        {boardNodes.map((col, y) =>
-          col.map((node, x) => (
-            <div className="node" key={`${Math.random()}`}>
+        {boardPoints.map((col, y) =>
+          col.map((point, x) => (
+            <div className="point" key={`${Math.random()}`}>
               <div
                 onClick={() => move(x, y)}
-                className={`stone ${node === "" ? "hidden" : null}`}
+                className={`stone ${point === "" ? "hidden" : null}`}
                 style={{
-                  backgroundColor: `${node === "" ? activePlayer : node}`,
+                  backgroundColor: `${point === "" ? activePlayer : point}`,
                 }}
               />
             </div>
