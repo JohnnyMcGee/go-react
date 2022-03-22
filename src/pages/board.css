@@ -5,6 +5,14 @@
     padding: 3em;
 }
 
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #262626;
+}
+
 .node {
     border-left: 3px solid black;
     border-top: 3px solid black;

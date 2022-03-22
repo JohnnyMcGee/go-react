@@ -4,66 +4,53 @@ import "./board.css";
 
 const boardSize = 3;
 
-// const boardNodes = [
-//   ["black", "white", ""],
-//   ["", "", "white"],
-//   ["white", "", "black"],
-// ];
-
-const activePlayer = "white";
+const boardState = [
+  ["black", "white", ""],
+  ["", "", "white"],
+  ["white", "", "black"],
+];
 
 const PlayGo = () => {
-  const [boardNodes, setBoardNodes] = useState([
-    ["black", "white", ""],
-    ["", "", "white"],
-    ["white", "", "black"],
-  ]);
+  const [boardNodes, setBoardNodes] = useState(boardState);
+
+  const [activePlayer, setActivePlayer] = useState("white");
 
   const move = (x, y) => {
-    console.log("Clicked node: ", x, y)
-    const newNodes = [...boardNodes];
-    newNodes[y][x] = activePlayer;
-    setBoardNodes(newNodes);
-    console.log(boardNodes);
+    const isOpenPoint = boardNodes[y][x] === "";
+    if (isOpenPoint) {
+      const newNodes = [...boardNodes];
+      newNodes[y][x] = activePlayer;
+      setBoardNodes(newNodes);
+      setActivePlayer(activePlayer === "white" ? "black" : "white");
+    }
   };
 
   return (
     <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        backgroundColor: "#262626",
-      }}
+      className = "container"
     >
       <div
         className="board"
         style={{
           gridTemplateRows: `repeat(${boardSize - 1}, 6em) 0`,
           gridTemplateColumns: `repeat(${boardSize - 1}, 6em) 0`,
+
         }}
       >
         {boardNodes.map((col, y) =>
-          col.map((element, x) => (
-            <Node node={element} x={x} y={y} onPlaceStone={move} />
+          col.map((node, x) => (
+            <div className="node" key={`Math.random()`}>
+              <div
+                onClick={() => move(x, y)}
+                className={`stone ${node === "" ? "hidden" : null}`}
+                style={{
+                  backgroundColor: `${node === "" ? activePlayer : node}`,
+                }}
+              />
+            </div>
           ))
         )}
       </div>
-    </div>
-  );
-};
-
-export const Node = ({ node, x, y, onPlaceStone }) => {
-  return (
-    <div className="node" key={`Math.random()`}>
-      <div
-        onClick={() => onPlaceStone(x, y)}
-        className={`stone ${node === "" ? "hidden" : null}`}
-        style={{
-          backgroundColor: `${node === "" ? activePlayer : node}`,
-        }}
-      />
     </div>
   );
 };
