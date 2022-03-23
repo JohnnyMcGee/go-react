@@ -13,30 +13,31 @@ const boardSize = 9;
 const PlayGo = () => {
   const [boardPoints, setBoardPoints] = useState([[]]);
 
-  const [activePlayer, setActivePlayer] = useState("white");
+  const [activePlayer, setActivePlayer] = useState("black");
 
   const [captures, setCaptures] = useState({ white: 0, black: 0 });
 
   useEffect(() => fetchData(), []);
 
-  const fetchData = async () => {
+  const getAPI = async (endpoint) => {
     let data;
-    const _fetchData = async (endpoint) => {
-      try {
-        const res = await fetch("http://localhost:8080" + endpoint);
-        data = await res.json();
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-      console.log(data);
-      return data;
-    };
 
-    setBoardPoints(await _fetchData("/board"));
-    setCaptures(await _fetchData("/captures"));
+    try {
+      const res = await fetch("http://localhost:8080" + endpoint);
+      data = await res.json();
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+    console.log(data);
+    return data;
+  };
+
+  const fetchData = async () => {
+    setBoardPoints(await getAPI("/board"));
+    setCaptures(await getAPI("/captures"));
     console.clear();
-    console.log(await _fetchData("/groups"));
+    await getAPI("/groups");
   };
 
   const postMove = async (move) => {
@@ -60,11 +61,19 @@ const PlayGo = () => {
     }
   };
 
+  const onNewGameButtonPressed = async () => {
+    getAPI("/new-game").then((_) => fetchData());
+    setActivePlayer("black")
+  };
+
   return (
     <div className="container">
       <div>
         <div className="scoreboard">
           <h3>{`Black: ${captures["black"]}`}</h3>
+          <button onClick={() => onNewGameButtonPressed()}>
+            New Game
+          </button>
           <h3>{`White: ${captures["white"]}`}</h3>
         </div>
         <div
@@ -84,9 +93,7 @@ const PlayGo = () => {
                     backgroundColor: `${point === "" ? activePlayer : point}`,
                   }}
                 >
-                  <p className="debug">
-                    {`${x}, ${y}`}
-                  </p>
+                  <p className="debug">{`${x}, ${y}`}</p>
                 </div>
               </div>
             ))
