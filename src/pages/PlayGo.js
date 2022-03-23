@@ -36,7 +36,7 @@ const PlayGo = () => {
   const fetchData = async () => {
     setBoardPoints(await getAPI("/board"));
     setCaptures(await getAPI("/captures"));
-    console.clear();
+    // console.clear();
     await getAPI("/groups");
   };
 
@@ -53,17 +53,21 @@ const PlayGo = () => {
   };
 
   const move = async (x, y) => {
-    const isOpenPoint = boardPoints[y][x] === "";
-    if (isOpenPoint) {
+    const point = boardPoints[y][x];
+    const isOpenPoint = point.color === "";
+    const isPermitted = point.permit[activePlayer];
+    if (isOpenPoint && isPermitted) {
       await postMove({ x: x, y: y, color: activePlayer });
       fetchData();
       setActivePlayer(activePlayer === "white" ? "black" : "white");
+    } else {
+      console.log(point);
     }
   };
 
   const onNewGameButtonPressed = async () => {
     getAPI("/new-game").then((_) => fetchData());
-    setActivePlayer("black")
+    setActivePlayer("black");
   };
 
   return (
@@ -71,9 +75,7 @@ const PlayGo = () => {
       <div>
         <div className="scoreboard">
           <h3>{`Black: ${captures["black"]}`}</h3>
-          <button onClick={() => onNewGameButtonPressed()}>
-            New Game
-          </button>
+          <button onClick={() => onNewGameButtonPressed()}>New Game</button>
           <h3>{`White: ${captures["white"]}`}</h3>
         </div>
         <div
@@ -83,18 +85,24 @@ const PlayGo = () => {
             gridTemplateColumns: `repeat(${boardSize - 1}, 6em) 0`,
           }}
         >
-          {boardPoints.map((col, y) =>
-            col.map((point, x) => (
+          {boardPoints.map((row, y) =>
+            row.map((point, x) => (
               <div className="point" key={`${Math.random()}`}>
-                <div
-                  onClick={() => move(x, y)}
-                  className={`stone ${point === "" ? "hidden" : null}`}
-                  style={{
-                    backgroundColor: `${point === "" ? activePlayer : point}`,
-                  }}
-                >
-                  <p className="debug">{`${x}, ${y}`}</p>
-                </div>
+                {point.color === "" && point.permit[activePlayer] === false ? (
+                  <h1 className="hidden">X</h1>
+                ) : (
+                  <div
+                    onClick={() => move(x, y)}
+                    className={`stone ${point.color === "" ? "hidden" : null}`}
+                    style={{
+                      backgroundColor: `${
+                        point.color === "" ? activePlayer : point.color
+                      }`,
+                    }}
+                  >
+                    <p className="debug">{`${x}, ${y}`}</p>
+                  </div>
+                )}
               </div>
             ))
           )}

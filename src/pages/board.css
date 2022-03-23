@@ -31,8 +31,23 @@
   left: -2em;
 }
 
+
+
 .hidden {
   opacity: 0;
+}
+
+h1.hidden {
+  color: red;
+  margin:0;
+  padding:0;
+  position: relative;
+  top: -.75em;
+  left: -.4em;
+  font-weight: bold;
+  width: 72px;
+  height: 72px;
+  font-size: 54px;
 }
 
 .hidden:hover {
