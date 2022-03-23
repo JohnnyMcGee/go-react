@@ -36,5 +36,23 @@
 }
 
 .hidden:hover {
-  opacity: 0.5;
+  /* opacity: 0.5; */
+  opacity: 0.8;
+
+}
+
+.scoreboard {
+  display: flex;
+  justify-content: space-between;
+  padding: 2em;
+  background-color: aquamarine;
+}
+
+.debug {
+  margin: 0;
+  position: absolute;
+top: 33%;
+left: 33%;
+color: blue;
+opacity: 1;
 }
