@@ -11,7 +11,8 @@ const PlayGo = () => {
 
   const [captures, setCaptures] = useState({ white: 0, black: 0 });
 
-  useEffect(() => fetchData(), []);
+  const [score, setScore] = useState({ white: 0, black: 0 })
+
 
   const getAPI = async (endpoint) => {
     let data;
@@ -31,9 +32,12 @@ const PlayGo = () => {
     setBoardPoints(await getAPI("/board"));
     setCaptures(await getAPI("/captures"));
     setActivePlayer(await getAPI("/active-player"))
+    setScore(await getAPI("/score"))
     // console.clear();
     await getAPI("/groups");
   };
+  useEffect(() => fetchData(), []);
+
 
   const postMove = async (move) => {
     try {
@@ -69,9 +73,9 @@ const PlayGo = () => {
     <div className="container">
       <div>
         <div className="scoreboard">
-          <h3>{`Black: ${captures["black"]}`}</h3>
+          <h3>{`Black: ${score["black"]}`}</h3>
           <button onClick={() => onNewGameButtonPressed()}>New Game</button>
-          <h3>{`White: ${captures["white"]}`}</h3>
+          <h3>{`White: ${score["white"]}`}</h3>
         </div>
         <div
           className="board"
