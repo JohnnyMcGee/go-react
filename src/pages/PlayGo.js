@@ -4,12 +4,6 @@ import "./board.css";
 
 const boardSize = 9;
 
-// const boardState = [
-//   ["black", "white", ""],
-//   ["", "", "white"],
-//   ["white", "", "black"],
-// ];
-
 const PlayGo = () => {
   const [boardPoints, setBoardPoints] = useState([[]]);
 
@@ -36,6 +30,7 @@ const PlayGo = () => {
   const fetchData = async () => {
     setBoardPoints(await getAPI("/board"));
     setCaptures(await getAPI("/captures"));
+    setActivePlayer(await getAPI("/active-player"))
     // console.clear();
     await getAPI("/groups");
   };
