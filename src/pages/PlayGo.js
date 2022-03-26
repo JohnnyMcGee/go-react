@@ -9,8 +9,6 @@ const PlayGo = () => {
 
   const [activePlayer, setActivePlayer] = useState("black");
 
-  const [captures, setCaptures] = useState({ white: 0, black: 0 });
-
   const [score, setScore] = useState({ white: 0, black: 0 })
 
 
@@ -24,17 +22,14 @@ const PlayGo = () => {
       console.log(e);
       return;
     }
-    console.log(data);
     return data;
   };
 
   const fetchData = async () => {
-    setBoardPoints(await getAPI("/board"));
-    setCaptures(await getAPI("/captures"));
-    setActivePlayer(await getAPI("/active-player"))
-    setScore(await getAPI("/score"))
-    // console.clear();
-    await getAPI("/groups");
+    getAPI("/board").then((data) => setBoardPoints(data));
+    getAPI("/active-player").then((data) => setActivePlayer(data));
+    getAPI("/score").then((data) => setScore(data));
+    getAPI("/groups").then((data) => console.log(data));
   };
   useEffect(() => fetchData(), []);
 
@@ -52,6 +47,7 @@ const PlayGo = () => {
   };
 
   const move = async (x, y) => {
+    const start = Date.now()
     const point = boardPoints[y][x];
     const isOpenPoint = point.color === "";
     const isPermitted = point.permit[activePlayer];
@@ -62,6 +58,7 @@ const PlayGo = () => {
     } else {
       console.log(point);
     }
+    console.log("Move executed in ", Date.now() - start, "ms")
   };
 
   const onNewGameButtonPressed = async () => {
