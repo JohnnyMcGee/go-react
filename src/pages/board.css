@@ -16,9 +16,9 @@
   flex-grow: 1;
 }
 
-.point {
-  border-left: 3px solid black;
-  border-top: 3px solid black;
+.board-square {
+  border-left: 3px solid rgba(27, 25, 25, 0.75);
+  border-top: 3px solid rgba(27, 25, 25, 0.75);
   position: relative;
 }
 
@@ -26,32 +26,17 @@
   border-radius: 50%;
   height: 4em;
   width: 4em;
-  position: absolute;
+  margin:0
+  /* position: absolute;
   top: -2em;
-  left: -2em;
+  left: -2em; */
 }
-
-
 
 .hidden {
   opacity: 0;
 }
 
-h1.hidden {
-  color: red;
-  margin:0;
-  padding:0;
-  position: relative;
-  top: -.75em;
-  left: -.4em;
-  font-weight: bold;
-  width: 72px;
-  height: 72px;
-  font-size: 54px;
-}
-
 .hidden:hover {
-  /* opacity: 0.5; */
   opacity: 0.8;
   cursor: pointer;
 

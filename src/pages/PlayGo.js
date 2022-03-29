@@ -1,111 +1,113 @@
 import React, { useState, useEffect } from "react";
+import {Box, CircularProgress} from "@mui/material";
+
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 import "./board.css";
 
 const boardSize = 9;
 
 const PlayGo = () => {
-  const [boardPoints, setBoardPoints] = useState([[]]);
 
-  const [activePlayer, setActivePlayer] = useState("black");
+	const [gameState, setGameState] = useState({})
+	useEffect(() => fetchGameData(), []);
+	let currentMove = 
 
-  const [score, setScore] = useState({ white: 0, black: 0 })
+	const getAPI = async (endpoint) => {
+		let data;
+			const res = await fetch("http://localhost:8080" + endpoint);
+			data = await res.json();
+		return data;
+	};
+
+	const fetchGameData = async () => {
+		getAPI("/game")
+			.then(data=>setGameState(data))
+		.catch(e=>console.log(e))
+	};
+
+		const onPlayPoint = async (point) => {
+			console.log(point)
+			const move = { x: point.x, y: point.y, color: gameState.turn }
+			try {
+				await fetch("http://localhost:8080/moves", {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify(move),
+				});
+			} catch (e) {
+				console.log(e);
+			}
+			fetchGameData();
+	};
+
+		const onNewGameButtonPressed = async () => {
+		getAPI("/new-game").then((_) => fetchGameData()).catch(e=>console.log(e));
+	};
 
 
-  const getAPI = async (endpoint) => {
-    let data;
 
-    try {
-      const res = await fetch("http://localhost:8080" + endpoint);
-      data = await res.json();
-    } catch (e) {
-      console.log(e);
-      return;
-    }
-    return data;
-  };
+	return (
+		<Box className="container">
+			{
+				Object.keys(gameState).length === 0
+			? <CircularProgress/>
+			: <Box className="board" sx={{
+	gridTemplateRows: `repeat(${boardSize - 1}, 6em) 0`,
+	gridTemplateColumns: `repeat(${boardSize - 1}, 6em) 0`,
+		}}>
+			{gameState.board.map((row, y) =>
+				row.map((point, x) => (
+					<Box className="board-square" key={`${point.x}${point.y}`} >
+						<Box sx={{position:"absolute", top:"calc(-2em - 1.5px)", left:"calc(-2em - 1.5px)"}}>
+						<Point point={point} turn={gameState.turn} onPlayPoint={onPlayPoint}/>
+						</Box>
+						</Box>
+				)))}
+		</Box>
+		}
+		</Box>
 
-  const fetchData = async () => {
-    getAPI("/board").then((data) => setBoardPoints(data));
-    getAPI("/active-player").then((data) => setActivePlayer(data));
-    getAPI("/score").then((data) => setScore(data));
-    getAPI("/groups").then((data) => console.log(data));
-  };
-  useEffect(() => fetchData(), []);
-
-
-  const postMove = async (move) => {
-    try {
-      await fetch("http://localhost:8080/moves", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(move),
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const move = async (x, y) => {
-    const start = Date.now()
-    const point = boardPoints[y][x];
-    const isOpenPoint = point.color === "";
-    const isPermitted = point.permit[activePlayer];
-    if (isOpenPoint && isPermitted) {
-      await postMove({ x: x, y: y, color: activePlayer });
-      fetchData();
-      setActivePlayer(activePlayer === "white" ? "black" : "white");
-    } else {
-      console.log(point);
-    }
-    console.log("Move executed in ", Date.now() - start, "ms")
-  };
-
-  const onNewGameButtonPressed = async () => {
-    getAPI("/new-game").then((_) => fetchData());
-    setActivePlayer("black");
-  };
-
-  return (
-    <div className="container">
-      <div>
-        <div className="scoreboard">
-          <h3>{`Black: ${score["black"]}`}</h3>
-          <button onClick={() => onNewGameButtonPressed()}>New Game</button>
-          <h3>{`White: ${score["white"]}`}</h3>
-        </div>
-        <div
-          className="board"
-          style={{
-            gridTemplateRows: `repeat(${boardSize - 1}, 6em) 0`,
-            gridTemplateColumns: `repeat(${boardSize - 1}, 6em) 0`,
-          }}
-        >
-          {boardPoints.map((row, y) =>
-            row.map((point, x) => (
-              <div className="point" key={`${Math.random()}`}>
-                {point.color === "" && point.permit[activePlayer] === false ? (
-                  <h1 className="hidden">X</h1>
-                ) : (
-                  <div
-                    onClick={() => move(x, y)}
-                    className={`stone ${point.color === "" ? "hidden" : null}`}
-                    style={{
-                      backgroundColor: `${
-                        point.color === "" ? activePlayer : point.color
-                      }`,
-                    }}
-                  >
-                    <p className="debug">{`${x}, ${y}`}</p>
-                  </div>
-                )}
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  );
+	// <div>
+	// <div className="scoreboard">
+	// <h3>{`Black: ${gameState.score["black"]}`}</h3>
+	// <button onClick={() => onNewGameButtonPressed()}>New Game</button>
+	// <h3>{`White: ${gameState.score["white"]}`}</h3>
+	// </div>
+	// <div
+	// className="board"
+	// style={{
+	// gridTemplateRows: `repeat(${boardSize - 1}, 6em) 0`,
+	// gridTemplateColumns: `repeat(${boardSize - 1}, 6em) 0`,
+	// }}
+	// >
+	// {gameState.board.map((row, y) =>
+	// row.map((point, x) => (
+	// <Point point={point} key={Math.random()}/>
+	// ))
+	// )}
+	// </div>
+	// </div>
+	// </div>
+	);
 };
 
 export default PlayGo;
+
+
+
+
+
+const Point = ({point, turn, onPlayPoint}) => {
+	const isOpenPoint = point.color === "";
+	const isPermitted = point.permit[turn] === true;
+	if (!isOpenPoint) {
+		return (<Box className={"stone"} sx={{backgroundColor:point.color}} />);
+	}
+	else if (isPermitted) {
+		return (<Box className={"hidden stone"} sx={{backgroundColor:turn}} onClick={()=>onPlayPoint(point)}/>);
+	} 
+	else {
+		return (<CloseRoundedIcon className="hidden" sx={{height:"2.5em", width:"2.5em", color:"#ce0000"}}/>);
+	}
+}
