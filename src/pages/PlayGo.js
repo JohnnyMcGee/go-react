@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {Box, CircularProgress} from "@mui/material";
+import {Box, CircularProgress, Paper} from "@mui/material";
 
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
@@ -11,7 +11,7 @@ const PlayGo = () => {
 
 	const [gameState, setGameState] = useState({})
 	useEffect(() => fetchGameData(), []);
-	let currentMove = 
+	let [currentMove, setCurrentMove] = useState([]);
 
 	const getAPI = async (endpoint) => {
 		let data;
@@ -35,6 +35,7 @@ const PlayGo = () => {
 					headers: { "content-type": "application/json" },
 					body: JSON.stringify(move),
 				});
+        setCurrentMove([point.x, point.y]);
 			} catch (e) {
 				console.log(e);
 			}
@@ -52,7 +53,7 @@ const PlayGo = () => {
 			{
 				Object.keys(gameState).length === 0
 			? <CircularProgress/>
-			: <Box className="board" sx={{
+			: <Paper elevation={5} className="board" sx={{
 	gridTemplateRows: `repeat(${boardSize - 1}, 6em) 0`,
 	gridTemplateColumns: `repeat(${boardSize - 1}, 6em) 0`,
 		}}>
@@ -60,35 +61,13 @@ const PlayGo = () => {
 				row.map((point, x) => (
 					<Box className="board-square" key={`${point.x}${point.y}`} >
 						<Box sx={{position:"absolute", top:"calc(-2em - 1.5px)", left:"calc(-2em - 1.5px)"}}>
-						<Point point={point} turn={gameState.turn} onPlayPoint={onPlayPoint}/>
+						<Point point={point} turn={gameState.turn} onPlayPoint={onPlayPoint} currentMove={currentMove[0]===x && currentMove[1]===y}/>
 						</Box>
 						</Box>
 				)))}
-		</Box>
+		</Paper>
 		}
 		</Box>
-
-	// <div>
-	// <div className="scoreboard">
-	// <h3>{`Black: ${gameState.score["black"]}`}</h3>
-	// <button onClick={() => onNewGameButtonPressed()}>New Game</button>
-	// <h3>{`White: ${gameState.score["white"]}`}</h3>
-	// </div>
-	// <div
-	// className="board"
-	// style={{
-	// gridTemplateRows: `repeat(${boardSize - 1}, 6em) 0`,
-	// gridTemplateColumns: `repeat(${boardSize - 1}, 6em) 0`,
-	// }}
-	// >
-	// {gameState.board.map((row, y) =>
-	// row.map((point, x) => (
-	// <Point point={point} key={Math.random()}/>
-	// ))
-	// )}
-	// </div>
-	// </div>
-	// </div>
 	);
 };
 
@@ -98,11 +77,13 @@ export default PlayGo;
 
 
 
-const Point = ({point, turn, onPlayPoint}) => {
+const Point = ({point, turn, onPlayPoint, currentMove}) => {
 	const isOpenPoint = point.color === "";
 	const isPermitted = point.permit[turn] === true;
 	if (!isOpenPoint) {
-		return (<Box className={"stone"} sx={{backgroundColor:point.color}} />);
+		return (<Paper elevation={10} className={`stone ${point.color==="black" ? "black-gradient" : "white-gradient"}`} sx={{borderRadius:"50%"}}>
+      {currentMove ? <p style={{color:"red", margin:"auto auto", textAlign:"center"}}>C</p> : null}
+    </Paper>);
 	}
 	else if (isPermitted) {
 		return (<Box className={"hidden stone"} sx={{backgroundColor:turn}} onClick={()=>onPlayPoint(point)}/>);
