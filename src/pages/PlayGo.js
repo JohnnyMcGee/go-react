@@ -5,6 +5,8 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 import "./board.css";
 
+import Stone from "../components/Stone.js";
+
 const boardSize = 9;
 
 const PlayGo = () => {
@@ -35,7 +37,7 @@ const PlayGo = () => {
 					headers: { "content-type": "application/json" },
 					body: JSON.stringify(move),
 				});
-        setCurrentMove([point.x, point.y]);
+					setCurrentMove([point.x, point.y]);
 			} catch (e) {
 				console.log(e);
 			}
@@ -80,15 +82,15 @@ export default PlayGo;
 const Point = ({point, turn, onPlayPoint, currentMove}) => {
 	const isOpenPoint = point.color === "";
 	const isPermitted = point.permit[turn] === true;
-	if (!isOpenPoint) {
-		return (<Paper elevation={10} className={`stone ${point.color==="black" ? "black-gradient" : "white-gradient"}`} sx={{borderRadius:"50%"}}>
-      {currentMove ? <p style={{color:"red", margin:"auto auto", textAlign:"center"}}>C</p> : null}
-    </Paper>);
-	}
-	else if (isPermitted) {
-		return (<Box className={"hidden stone"} sx={{backgroundColor:turn}} onClick={()=>onPlayPoint(point)}/>);
-	} 
-	else {
-		return (<CloseRoundedIcon className="hidden" sx={{height:"2.5em", width:"2.5em", color:"#ce0000"}}/>);
-	}
+		if (isOpenPoint && !isPermitted) {
+			return (<CloseRoundedIcon className="hidden" sx={{height:"2.5em", width:"2.5em", color:"#ce0000"}}/>);
+		} else {
+			return <Stone
+				color={isOpenPoint ? turn : point.color}
+				isOpen={isOpenPoint}
+        onClick={()=>onPlayPoint(point)}
+			>
+			{currentMove ? <p style={{color:"red", margin:"auto auto", textAlign:"center"}}>C</p> : null}
+			</Stone>
+			}
 }
