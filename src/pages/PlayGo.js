@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {Box, CircularProgress, Paper} from "@mui/material";
+import {Box, CircularProgress} from "@mui/material";
 
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-
-import "./board.css";
-
-import Stone from "../components/Stone.js";
-
-const boardSize = 9;
+import Board from "../components/Board.js";
 
 const PlayGo = () => {
 
 	const [gameState, setGameState] = useState({})
 	useEffect(() => fetchGameData(), []);
-	let [currentMove, setCurrentMove] = useState([]);
 
 	const getAPI = async (endpoint) => {
 		let data;
@@ -37,7 +30,6 @@ const PlayGo = () => {
 					headers: { "content-type": "application/json" },
 					body: JSON.stringify(move),
 				});
-					setCurrentMove([point.x, point.y]);
 			} catch (e) {
 				console.log(e);
 			}
@@ -48,26 +40,20 @@ const PlayGo = () => {
 		getAPI("/new-game").then((_) => fetchGameData()).catch(e=>console.log(e));
 	};
 
-
-
 	return (
-		<Box className="container">
-			{
-				Object.keys(gameState).length === 0
-			? <CircularProgress/>
-			: <Paper elevation={5} className="board" sx={{
-	gridTemplateRows: `repeat(${boardSize - 1}, 6em) 0`,
-	gridTemplateColumns: `repeat(${boardSize - 1}, 6em) 0`,
+		<Box sx={{
+			display: "flex",
+			justifyContent: "center",
+			alignItems: "center",
+			height: "max-content",
+			padding: "6em",
+			width: "max-content",
+			flexGrow: "1",
 		}}>
-			{gameState.board.map((row, y) =>
-				row.map((point, x) => (
-					<Box className="board-square" key={`${point.x}${point.y}`} >
-						<Box sx={{position:"absolute", top:"calc(-2em - 1.5px)", left:"calc(-2em - 1.5px)"}}>
-						<Point point={point} turn={gameState.turn} onPlayPoint={onPlayPoint} currentMove={currentMove[0]===x && currentMove[1]===y}/>
-						</Box>
-						</Box>
-				)))}
-		</Paper>
+		{
+			Object.keys(gameState).length === 0
+		? <CircularProgress/>
+		: <Board board={gameState.board} turn={gameState.turn} onPlayPoint={onPlayPoint}/>
 		}
 		</Box>
 	);
@@ -75,22 +61,3 @@ const PlayGo = () => {
 
 export default PlayGo;
 
-
-
-
-
-const Point = ({point, turn, onPlayPoint, currentMove}) => {
-	const isOpenPoint = point.color === "";
-	const isPermitted = point.permit[turn] === true;
-		if (isOpenPoint && !isPermitted) {
-			return (<CloseRoundedIcon className="hidden" sx={{height:"2.5em", width:"2.5em", color:"#ce0000"}}/>);
-		} else {
-			return <Stone
-				color={isOpenPoint ? turn : point.color}
-				isOpen={isOpenPoint}
-        onClick={()=>onPlayPoint(point)}
-			>
-			{currentMove ? <p style={{color:"red", margin:"auto auto", textAlign:"center"}}>C</p> : null}
-			</Stone>
-			}
-}
