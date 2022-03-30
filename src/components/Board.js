@@ -5,9 +5,7 @@ import {Paper, Box} from '@mui/material';
 import Stone from "../components/Stone.js";
 import boardJPG from "../image/board.jpg";
 
-const Board = ({board, turn, onPlayPoint}) => {
-	let [currentMove, setCurrentMove] = useState([]);
-
+const Board = ({board, turn, onPlayPoint, currentMove}) => {
 		const boardSize = board[0].length;
 		const dots = {
 			2:[2,6],
@@ -15,14 +13,10 @@ const Board = ({board, turn, onPlayPoint}) => {
 			6:[2,6],
 		};
 
-		const playPoint = (point) => {
-			onPlayPoint(point);
-			setCurrentMove(point.x, point.y);
-		}
-
 		const mapPointToComponent = (point) => {
 			const isOpenPoint = point.color === "";
 			const isPermitted = point.permit[turn] === true;
+			const isCurrentMove = currentMove && point.x === currentMove[0] && point.y === currentMove[1];
 				if (isOpenPoint && !isPermitted) {
 					return (<CloseRoundedIcon
 						sx={{
@@ -42,12 +36,11 @@ const Board = ({board, turn, onPlayPoint}) => {
 				duration: theme.transitions.duration.shortest}), }}/>);
 				} else {
 					return <Stone
-						tabindex="0"
 						color={isOpenPoint ? turn : point.color}
 						isOpen={isOpenPoint}
-						onClick={()=>playPoint(point)}
+						onClick={()=>onPlayPoint(point)}
 					>
-					{currentMove ? <p style={{color:"red", margin:"auto auto", textAlign:"center"}}>C</p> : null}
+					{isCurrentMove ? <p style={{color:"red", margin:"auto auto", textAlign:"center"}}>C</p> : null}
 					</Stone>
 					}
 		}
