@@ -1,12 +1,12 @@
 import {Paper} from "@mui/material";
 
-const Stone = (props) => {
-	
-	const bgGradient = props.color === "black"
+const Stone = ({isOpen, color, onClick, sx, ...props}) => {
+
+	const bgGradient = color === "black"
 	? "radial-gradient(ellipse at 60% 10%, rgb(66, 66, 66) 20%, black 95% )"
 	: "radial-gradient(ellipse at 60% 10%, white 40%, rgb(190, 190, 190) 95%)";
 		let hidden = {};
-		if (props.isOpen) {
+		if (isOpen) {
 			hidden = {
 				"&:hover":{
 					opacity:0.5,
@@ -26,9 +26,10 @@ const Stone = (props) => {
 		}
 	return (
 		<Paper
+		{...props}
 		tabIndex="0"
-			elevation={props.isOpen ? 12 : 8}
-      onClick={props.isOpen ? props.onClick : null}
+			elevation={isOpen ? 12 : 8}
+				onClick={isOpen ? onClick : null}
 		sx={{
 			position: "absolute",
 			borderRadius: "50%",
@@ -36,12 +37,13 @@ const Stone = (props) => {
 			width: "4em",
 			margin:0,
 
-			opacity:props.isOpen ? 0 : 1,
+			opacity:isOpen ? 0 : 1,
 				background: bgGradient,
 				transition: (theme) => theme.transitions.create(["height", "width", "top", "left", "opacity"], {
 					duration: theme.transitions.duration.standard,
 				}),
-        ...hidden
+			...sx,
+			...hidden,
 			}}
 		/>
 		);
