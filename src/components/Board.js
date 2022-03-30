@@ -39,9 +39,10 @@ const Board = ({board, turn, onPlayPoint}) => {
 								opacity:.5,
 							},
 							transition: (theme) => theme.transitions.create(["opacity"], {
-				duration: theme.transitions.duration.shortest}),								}}/>);
+				duration: theme.transitions.duration.shortest}), }}/>);
 				} else {
 					return <Stone
+						tabindex="0"
 						color={isOpenPoint ? turn : point.color}
 						isOpen={isOpenPoint}
 						onClick={()=>playPoint(point)}
@@ -57,20 +58,20 @@ const Board = ({board, turn, onPlayPoint}) => {
 				sx={{
 				gridTemplateRows: `repeat(${boardSize - 1}, 4.55em) 0`,
 				gridTemplateColumns: `repeat(${boardSize - 1}, 4.25em) 0`,
-					backgroundImage:`url(${boardJPG})`,
-	backgroundPosition:"center",
-	backgroundSize:"cover",
-	display: "grid",
-	height: "max-content",
-	padding: "4.5em",
-	width: "max-content",
-	borderRight: "4px solid rgb(183 140 99 / 25%)",
-	borderTop: "4px solid rgb(150 110 85 / 25%)",
-	borderLeft: "4px solid rgb(170 114 66 / 25%)",
-	borderBottom: "4px solid rgb(166 103 77 / 25%)",
-	borderRadius: "2px",
-		}}
-		>
+				backgroundImage:`url(${boardJPG})`,
+				backgroundPosition:"center",
+				backgroundSize:"cover",
+				display: "grid",
+				height: "max-content",
+				padding: "4.5em",
+				width: "max-content",
+				borderRight: "4px solid rgb(183 140 99 / 25%)",
+				borderTop: "4px solid rgb(150 110 85 / 25%)",
+				borderLeft: "4px solid rgb(170 114 66 / 25%)",
+				borderBottom: "4px solid rgb(166 103 77 / 25%)",
+				borderRadius: "2px",
+				}}
+			>
 			{board.map((row, y) =>
 				row.map((point, x) => (
 					<Box 
