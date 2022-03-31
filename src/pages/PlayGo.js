@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {Box, CircularProgress, Stack, Container, AppBar, Toolbar, IconButton, Typography} from "@mui/material";
+import {Box, CircularProgress, Zoom, Container, AppBar, Toolbar, IconButton, Typography, Stack, Tooltip} from "@mui/material";
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-
+import FastForwardIcon from '@mui/icons-material/FastForward';
+import FlagRoundedIcon from '@mui/icons-material/FlagRounded';
 import Board from "../components/Board.js";
 import Scoreboard from "../components/Scoreboard.js";
 
@@ -45,7 +46,9 @@ const PlayGo = () => {
 		getAPI("/new-game").then((_) => fetchGameData()).catch(e=>console.log(e));
 	};
 
-	// TODO: add buttons to return home, edit settings, and start a new game
+	// TODO: add buttons to return home, edit settings, and start a new game, pass, resign current game
+	// pretty up current point indicator
+	// scrolling with mouse hover?
 
 	return (
 		<>
@@ -59,15 +62,41 @@ const PlayGo = () => {
 				>
 					<MenuRoundedIcon fontSize="large" />
 				</IconButton>
+				<Stack 
+					direction="row"
+					flexGrow={1}
+					justifyContent="space-evenly"
+					sx={{
+						position: "absolute",
+						left:{
+							xs: "64px",
+							md: 0,
+						},
+						right:0,
+						}}
+
+
+					>
 				<Scoreboard 
 					color="white"
 					score={gameState.hasOwnProperty("score") ? gameState.score["white"] : 0}
 					turn={gameState.hasOwnProperty("turn") ? gameState.turn : "black"}/>
-				<Box sx={{flexGrow:1}} />
+				<Tooltip title="Pass" arrow TransitionComponent={Zoom}>
+				<IconButton size="large" aria-label="pass" sx={{color:"rgb(245,245,245)"}}>
+				<FastForwardIcon fontSize="large"/>
+				</IconButton>
+				</Tooltip>
+				<Tooltip title="Resign" arrow TransitionComponent={Zoom}>
+				<IconButton size="large" aria-label="resign" sx={{color:"rgb(245,245,245)"}}>
+					<FlagRoundedIcon fontSize="large"/>
+				</IconButton>
+				</Tooltip>
+
 				<Scoreboard 
 					color="black" 
 					score={gameState.hasOwnProperty("score") ? gameState.score["black"] : 0}
 					turn={gameState.hasOwnProperty("turn") ? gameState.turn : "black"}/>
+				</Stack>
 			</Toolbar>
 		</AppBar>
 			{
@@ -95,7 +124,6 @@ const PlayGo = () => {
 				<Board board={gameState.board} turn={gameState.turn} onPlayPoint={onPlayPoint} currentMove={currentMove}/>
 			</Box>
 			}
-			{/* <Box sx={{height:"200vh", width:"100%", background:"linear-gradient(45deg, indigo, violet)"}}/> */}
 		</>
 	);
 };
