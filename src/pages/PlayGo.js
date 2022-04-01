@@ -7,7 +7,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import Board from "../components/Board.js";
 import Scoreboard from "../components/Scoreboard.js";
 
-const FadeTransition = (props) => <Fade {...props} timeout={{enter:1000, exit:450}}/>;
+const FadeTransition = (props) => <Fade {...props} timeout={{enter:1600, exit:450}}/>;
 const capitalize = (str) => `${str.slice(0,1).toUpperCase() + str.slice(1).toLowerCase()}`
 
 const PlayGo = () => {
@@ -17,7 +17,7 @@ const PlayGo = () => {
 	const [backdropOpen, setBackdropOpen] = useState(false);
 	const [snackbarOpen, setSnackbarOpen] = useState(false);
 	const [snackbarContent, setSnackbarContent] = useState('');
-	const [dialogContent, setDialogContent] = useState({message:"", callback:()=>{},})
+	const [dialogContent, setDialogContent] = useState({title: "", message:"", callback:()=>{},})
 	const [dialogOpen, setDialogOpen] = useState(false);
 
 
@@ -56,16 +56,29 @@ const PlayGo = () => {
 			}
 	};
 
-		const onNewGameButton = () => {
-		getAPI("/new-game").then((_) => fetchGameData()).catch(e=>console.log(e));
-		setSnackbarContent("Started New Game");
-		setSnackbarOpen(true);
+	const onNewGameButton = () => {
+		const newGameCallback = () => {
+			getAPI("/new-game").then((_) => fetchGameData()).catch(e=>console.log(e));
+			setDialogOpen(false);
+			setSnackbarContent("Started New Game");
+			setSnackbarOpen(true);
+		};
+		if (gameState.ended) {
+			newGameCallback();
+		} else {
+			setDialogContent({
+				title: "Start a New Game",
+				message: "Are you sure? This will end the current game.",
+				callback: newGameCallback,
+			});
+				setDialogOpen(true);
+		}
 	};
 
 	const onPassButton = () => {
 		const passCallback = () => {
 			getAPI("/pass").then(async (_) => fetchGameData()).catch(e=>console.log(e));
-			dialogOpen && setDialogOpen(false);
+			setDialogOpen(false);
 			setSnackbarContent(`${capitalize(gameState.turn)} passes`);
 			setSnackbarOpen(true);
 		}
@@ -73,7 +86,8 @@ const PlayGo = () => {
 			return
 		} else if (gameState.passed) {
 			setDialogContent({
-				message: "If both players pass on the same turn, the game will end.",
+				title: "Pass",
+				message: "Are you sure? If both players pass consecutively, the game will end.",
 				callback:passCallback,
 			});
 			setDialogOpen(true);
@@ -89,8 +103,12 @@ const PlayGo = () => {
 			setSnackbarContent(`${capitalize(gameState.turn)} resigned.`);
 			setSnackbarOpen(true);
 		}
+		if (gameState.ended) {
+			return
+		}
 		setDialogContent({
-			message: "If you resign, your opponent automatically wins the game.",
+			title: "Resign Game",
+			message: "Are you sure? If you resign, your opponent automatically wins.",
 			callback:resignCallback,
 		})
 		setDialogOpen(true);
@@ -175,9 +193,7 @@ const PlayGo = () => {
 			<Typography variant="h5" color="white" textAlign="center">Loading Game Board</Typography>
 				<CircularProgress sx={{m:"auto"}}/>
 			</Container> 
-			:
-			<>
-			<Box sx={{
+			: <Box sx={{
 				display: "flex",
 				justifyContent: "center",
 				alignItems: "center",
@@ -188,6 +204,7 @@ const PlayGo = () => {
 			}}>
 				<Board board={gameState.board} turn={gameState.turn} onPlayPoint={onPlayPoint} currentMove={currentMove}/>
 			</Box>
+			}
 			<Backdrop open={backdropOpen} onClick={()=>setBackdropOpen(false)}>
 			<Stack textAlign="center">
 				<Typography variant="h1" fontWeight="bold" sx={{color:"rgba(245,245,245, .5)"}}>
@@ -198,15 +215,13 @@ const PlayGo = () => {
 				</Typography>
 			</Stack>
 			</Backdrop>
-			</>
-			}
 			<Snackbar TransitionComponent={FadeTransition} open={snackbarOpen} autoHideDuration={2500} message={snackbarContent} anchorOrigin={{vertical: "bottom", horizontal: "center"}}onClose={()=>setSnackbarOpen(false)}/>
 			<Dialog
 				open={dialogOpen}
 				onClose={()=>setDialogOpen(false)}
 				>
 					<DialogTitle>
-						{"Are you sure?"}
+						{dialogContent.title}
 					</DialogTitle>
 					<DialogContent>
 						<DialogContentText>
