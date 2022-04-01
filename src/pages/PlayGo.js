@@ -27,13 +27,14 @@ const PlayGo = () => {
 		return data;
 	};
 
-	const fetchGameData = () => {
-		getAPI("/game")
-			.then(game=>{
-				setGameState(game);
-				setBackdropOpen(game.ended)
-			})
-		.catch(e=>console.log(e))
+	const fetchGameData = async () => {
+		try {
+			const game = await getAPI("/game");
+			setGameState(game);
+			setBackdropOpen(game.ended)
+		} catch(e) {
+			console.log(e)
+		}
 	};
 
 		const onPlayPoint = async (point) => {
@@ -49,9 +50,26 @@ const PlayGo = () => {
 				} catch (e) {
 					console.log(e);
 				}
-				fetchGameData();
+				await fetchGameData();
+				getAIPlayerMove();
 			}
 	};
+
+	const getAIPlayerMove = async () => {
+		console.log("get ai player move!")
+		try {
+			const playerMove = await getAPI("/player-move/white");
+			if (playerMove === "pass") {
+				setSnackbarContent("White passes.");
+				setSnackbarOpen(true);
+			} else {
+				setCurrentMove([playerMove.x, playerMove.y]);
+			}
+			setTimeout(fetchGameData, Math.random*5000);
+		} catch(e) {
+			console.log(e);
+		}
+	}
 
 	const onNewGameButton = () => {
 		const newGameCallback = () => {
@@ -91,6 +109,7 @@ const PlayGo = () => {
 		} else {
 			passCallback();
 		}
+		getAIPlayerMove();
 	};
 
 	const onResignButton = async () => {
@@ -115,7 +134,7 @@ const PlayGo = () => {
 	const onShowTerritoryButton = () => {
 		setShowTerritory(!showTerritory);
 	}
-	
+
 
 	const displayWinner = () => {
 		if (gameState.winner.length > 0) {
