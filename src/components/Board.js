@@ -18,6 +18,10 @@ const Board = ({board, turn, onPlayPoint, currentMove}) => {
 			const isPermitted = point.permit[turn] === true;
 			const isCurrentMove = currentMove && point.x === currentMove[0] && point.y === currentMove[1];
 				if (isOpenPoint && !isPermitted) {
+					// Show nothing if the game has ended
+					if (turn === "") {
+						return
+					}
 					return (<CloseRoundedIcon
 						sx={{
 							fontSize:"2em",
