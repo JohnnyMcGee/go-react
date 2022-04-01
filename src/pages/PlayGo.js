@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {Box, Fade, Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Backdrop, Snackbar, Modal, CircularProgress, Zoom, Container, AppBar, Toolbar, IconButton, Typography, Stack, Tooltip} from "@mui/material";
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import FastForwardIcon from '@mui/icons-material/FastForward';
-import FlagRoundedIcon from '@mui/icons-material/FlagRounded';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import {Box, Fade, Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Backdrop, Snackbar, CircularProgress, Container, Typography, Stack} from "@mui/material";
 import Board from "../components/Board.js";
-import Scoreboard from "../components/Scoreboard.js";
+import GameToolbar from "../components/GameToolbar.js";
 
 const FadeTransition = (props) => <Fade {...props} timeout={{enter:1600, exit:450}}/>;
 const capitalize = (str) => `${str.slice(0,1).toUpperCase() + str.slice(1).toLowerCase()}`
@@ -129,58 +125,13 @@ const PlayGo = () => {
 
 	return (
 		<>
-		<AppBar elevation={0} color="transparent">
-			<Toolbar>
-			<IconButton
-				size="large"
-				edge="start"
-				aria-label="menu"
-				sx={{ mr: 2, color:"rgb(245,245,245)",}}
-				>
-					<MenuRoundedIcon fontSize="large" />
-				</IconButton>
-				<Stack 
-					direction="row"
-					flexGrow={1}
-					justifyContent="space-evenly"
-					sx={{
-						position: "absolute",
-						left:{
-							xs: "64px",
-							md: 0,
-						},
-						right:0,
-						}}
-
-
-					>
-				<Scoreboard 
-					color="white"
-					score={gameState.hasOwnProperty("score") ? gameState.score["white"] : 0}
-					turn={gameState.hasOwnProperty("turn") ? gameState.turn : "black"}/>
-				<Tooltip title="New Game" arrow TransitionComponent={Zoom}>
-				<IconButton size="large" aria-label="new game" onClick={onNewGameButton} sx={{color:"rgb(245,245,245)"}}>
-				<RefreshIcon fontSize="large"/>
-				</IconButton>
-				</Tooltip>
-				<Tooltip title="Pass" arrow TransitionComponent={Zoom}>
-				<IconButton size="large" aria-label="pass" onClick={onPassButton} sx={{color:"rgb(245,245,245)"}}>
-				<FastForwardIcon fontSize="large"/>
-				</IconButton>
-				</Tooltip>
-				<Tooltip title="Resign" arrow TransitionComponent={Zoom}>
-				<IconButton size="large" aria-label="resign" onClick={onResignButton} sx={{color:"rgb(245,245,245)"}}>
-					<FlagRoundedIcon fontSize="large"/>
-				</IconButton>
-				</Tooltip>
-
-				<Scoreboard 
-					color="black" 
-					score={gameState.hasOwnProperty("score") ? gameState.score["black"] : 0}
-					turn={gameState.hasOwnProperty("turn") ? gameState.turn : "black"}/>
-				</Stack>
-			</Toolbar>
-		</AppBar>
+		<GameToolbar
+			score={gameState.hasOwnProperty("score") ? gameState.score : {"black":0, "white":0}}
+			turn={gameState.hasOwnProperty("turn")? gameState.turn : "black"}
+			onNewGame={onNewGameButton}
+			onPass={onPassButton}
+			onResign={onResignButton}
+		/>
 			{
 			Object.keys(gameState).length === 0
 			? <Container sx={{
@@ -193,7 +144,8 @@ const PlayGo = () => {
 			<Typography variant="h5" color="white" textAlign="center">Loading Game Board</Typography>
 				<CircularProgress sx={{m:"auto"}}/>
 			</Container> 
-			: <Box sx={{
+			: <>
+			<Box sx={{
 				display: "flex",
 				justifyContent: "center",
 				alignItems: "center",
@@ -204,7 +156,6 @@ const PlayGo = () => {
 			}}>
 				<Board board={gameState.board} turn={gameState.turn} onPlayPoint={onPlayPoint} currentMove={currentMove}/>
 			</Box>
-			}
 			<Backdrop open={backdropOpen} onClick={()=>setBackdropOpen(false)}>
 			<Stack textAlign="center">
 				<Typography variant="h1" fontWeight="bold" sx={{color:"rgba(245,245,245, .5)"}}>
@@ -215,6 +166,8 @@ const PlayGo = () => {
 				</Typography>
 			</Stack>
 			</Backdrop>
+			</>
+			}
 			<Snackbar TransitionComponent={FadeTransition} open={snackbarOpen} autoHideDuration={2500} message={snackbarContent} anchorOrigin={{vertical: "bottom", horizontal: "center"}}onClose={()=>setSnackbarOpen(false)}/>
 			<Dialog
 				open={dialogOpen}
