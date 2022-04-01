@@ -6,10 +6,12 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import FastForwardIcon from "@mui/icons-material/FastForward";
 import FlagRoundedIcon from "@mui/icons-material/FlagRounded";
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import CastleOutlinedIcon from '@mui/icons-material/CastleOutlined';
+import CastleRoundedIcon from '@mui/icons-material/CastleRounded';
 
 import Scoreboard from "../components/Scoreboard.js";
 
-const GameToolbar = ({score, turn, onNewGame, onPass, onResign}) => {
+const GameToolbar = ({score, turn, showTerritory, onNewGame, onPass, onResign, onShowTerritory}) => {
 	return (
 		<AppBar elevation={0} color="transparent">
 			<Toolbar>
@@ -51,6 +53,15 @@ const GameToolbar = ({score, turn, onNewGame, onPass, onResign}) => {
 						<IconButton size="large" aria-label="resign" onClick={onResign} sx={{color:"rgb(245,245,245)"}}>
 							<FlagRoundedIcon fontSize="large"/>
 						</IconButton>
+					</Tooltip>
+					<Tooltip title={(showTerritory ? "Hide" : "Show") + " Territory"} arrow TransitionComponent={Zoom}>
+						<IconButton size="large" aria-label="resign" onClick={onShowTerritory} sx={{color:"rgb(245,245,245)"}}>
+							{showTerritory 
+								? <CastleRoundedIcon fontSize="large" />
+								: <CastleOutlinedIcon fontSize="large"/>
+							}
+						</IconButton>
+
 					</Tooltip>
 					<Scoreboard 
 						color="black" 

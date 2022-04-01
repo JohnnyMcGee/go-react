@@ -15,6 +15,7 @@ const PlayGo = () => {
 	const [snackbarContent, setSnackbarContent] = useState('');
 	const [dialogContent, setDialogContent] = useState({title: "", message:"", callback:()=>{},})
 	const [dialogOpen, setDialogOpen] = useState(false);
+	const [showTerritory, setShowTerritory] = useState(false);
 
 
 	useEffect(() => fetchGameData(), []);
@@ -111,6 +112,11 @@ const PlayGo = () => {
 
 	}
 
+	const onShowTerritoryButton = () => {
+		setShowTerritory(!showTerritory);
+	}
+	
+
 	const displayWinner = () => {
 		if (gameState.winner.length > 0) {
 			return `${capitalize(gameState.winner)} Wins!`;
@@ -119,7 +125,7 @@ const PlayGo = () => {
 		}
 	}
 
-	// TODO: add buttons to return home, edit settings, and start a new game, pass, resign current game
+	// TODO: add buttons to return home, edit settings
 	// pretty up current point indicator
 	// scrolling with mouse hover?
 
@@ -128,9 +134,11 @@ const PlayGo = () => {
 		<GameToolbar
 			score={gameState.hasOwnProperty("score") ? gameState.score : {"black":0, "white":0}}
 			turn={gameState.hasOwnProperty("turn")? gameState.turn : "black"}
+			showTerritory={showTerritory}
 			onNewGame={onNewGameButton}
 			onPass={onPassButton}
 			onResign={onResignButton}
+			onShowTerritory={onShowTerritoryButton}
 		/>
 			{
 			Object.keys(gameState).length === 0
@@ -154,7 +162,13 @@ const PlayGo = () => {
 				width: "max-content",
 				flexGrow: "1",
 			}}>
-				<Board board={gameState.board} turn={gameState.turn} onPlayPoint={onPlayPoint} currentMove={currentMove}/>
+				<Board
+					board={gameState.board}
+					turn={gameState.turn}
+					onPlayPoint={onPlayPoint}
+					currentMove={currentMove}
+					showTerritory={showTerritory}
+				/>
 			</Box>
 			<Backdrop open={backdropOpen} onClick={()=>setBackdropOpen(false)}>
 			<Stack textAlign="center">
