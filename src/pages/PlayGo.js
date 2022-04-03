@@ -18,7 +18,13 @@ const PlayGo = () => {
 	const [showTerritory, setShowTerritory] = useState(false);
 
 
-	useEffect(() => fetchGameData(), []);
+	useEffect(() => {
+		fetchGameData()
+	}, []);
+
+	const autoPlay = async () => {
+		onPassButton()
+	}
 
 	const getAPI = async (endpoint) => {
 		let data;
@@ -65,7 +71,7 @@ const PlayGo = () => {
 			} else {
 				setCurrentMove([playerMove.x, playerMove.y]);
 			}
-			setTimeout(fetchGameData, Math.random*5000);
+			fetchGameData()
 		} catch(e) {
 			console.log(e);
 		}
@@ -73,10 +79,15 @@ const PlayGo = () => {
 
 	const onNewGameButton = () => {
 		const newGameCallback = () => {
-			getAPI("/new-game").then((_) => fetchGameData()).catch(e=>console.log(e));
-			setDialogOpen(false);
-			setSnackbarContent("Started New Game");
-			setSnackbarOpen(true);
+			try {
+				getAPI("/new-game")
+				fetchGameData()
+				setDialogOpen(false);
+				setSnackbarContent("Started New Game");
+				setSnackbarOpen(true);
+			} catch(e) {
+				console.log(e)
+			}
 		};
 		if (gameState.ended) {
 			newGameCallback();
@@ -92,10 +103,18 @@ const PlayGo = () => {
 
 	const onPassButton = () => {
 		const passCallback = () => {
-			getAPI("/pass").then(async (_) => fetchGameData()).catch(e=>console.log(e));
-			setDialogOpen(false);
-			setSnackbarContent(`${capitalize(gameState.turn)} passes`);
-			setSnackbarOpen(true);
+			try {
+				(async() => {
+					await getAPI("/pass")
+					await fetchGameData()
+					getAIPlayerMove();
+				})();
+				setDialogOpen(false);
+				setSnackbarContent(`${capitalize(gameState.turn)} passes`);
+				setSnackbarOpen(true);
+			} catch (error) {
+				console.log(error)
+			}
 		}
 		if (gameState.ended) {
 			return
@@ -109,7 +128,6 @@ const PlayGo = () => {
 		} else {
 			passCallback();
 		}
-		getAIPlayerMove();
 	};
 
 	const onResignButton = async () => {
@@ -221,6 +239,7 @@ const PlayGo = () => {
 						</Button>
 					</DialogActions>
 					</Dialog>
+					<Button variant="contained" onClick={autoPlay} sx={{position:"fixed", left:"2em", bottom:"2em"}}>Auto</Button>
 		</>
 	);
 };
