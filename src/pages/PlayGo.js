@@ -22,9 +22,22 @@ const PlayGo = () => {
 		fetchGameData()
 	}, []);
 
-	const autoPlay = async () => {
-		onPassButton()
-	}
+	const autoPlay = () => {
+		console.log("auto play")
+		const passLoop = async () => {
+			if (!gameState.ended) {
+				try {
+					setDialogOpen(false);
+					await getAIPlayerMove("black", false);
+					await getAIPlayerMove("white", false);
+					setTimeout(passLoop, 1000)
+				} catch (error) {
+					console.log(error)
+				}
+			}
+		}
+		setTimeout(passLoop, 100)
+}
 
 	const getAPI = async (endpoint) => {
 		let data;
@@ -57,21 +70,23 @@ const PlayGo = () => {
 					console.log(e);
 				}
 				await fetchGameData();
-				getAIPlayerMove();
+				getAIPlayerMove("white", false);
 			}
 	};
 
-	const getAIPlayerMove = async () => {
-		console.log("get ai player move!")
+
+
+	const getAIPlayerMove = async (color, randomize) => {
 		try {
-			const playerMove = await getAPI("/player-move/white");
+			const endpoint = (randomize ? "/random-move/" : "/player-move/") + color;
+			const playerMove = await getAPI(endpoint);
 			if (playerMove === "pass") {
 				setSnackbarContent("White passes.");
 				setSnackbarOpen(true);
 			} else {
 				setCurrentMove([playerMove.x, playerMove.y]);
 			}
-			fetchGameData()
+			await fetchGameData()
 		} catch(e) {
 			console.log(e);
 		}
@@ -107,7 +122,7 @@ const PlayGo = () => {
 				(async() => {
 					await getAPI("/pass")
 					await fetchGameData()
-					getAIPlayerMove();
+					getAIPlayerMove("white", false);
 				})();
 				setDialogOpen(false);
 				setSnackbarContent(`${capitalize(gameState.turn)} passes`);
