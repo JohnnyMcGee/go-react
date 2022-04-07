@@ -22,21 +22,27 @@ const PlayGo = () => {
 		fetchGameData()
 	}, []);
 
-	const autoPlay = () => {
+	const autoPlay = (numGames) => {
 		console.log("auto play")
-		const passLoop = async () => {
-			if (!gameState.ended) {
-				try {
-					setDialogOpen(false);
-					await getAIPlayerMove("black", false);
-					await getAIPlayerMove("white", false);
-					setTimeout(passLoop, 1000)
-				} catch (error) {
-					console.log(error)
+		let auto = setInterval(()=>Loop(numGames), 500)
+		const Loop = async () => {
+			try {
+				setDialogOpen(false);
+				const game = await getAIPlayerMove();
+				if (game.ended) {
+					clearInterval(auto)
+					if (numGames > 0) {
+						console.log(numGames)
+						await getAPI("/train-netplayer")
+						await newGameCallback()
+						auto = setInterval(()=>Loop(numGames-1), 500)
+					}
+				console.log("Game Over")
 				}
+			} catch (error) {
+				console.log(error)
 			}
 		}
-		setTimeout(passLoop, 100)
 }
 
 	const getAPI = async (endpoint) => {
@@ -51,6 +57,7 @@ const PlayGo = () => {
 			const game = await getAPI("/game");
 			setGameState(game);
 			setBackdropOpen(game.ended)
+			return game
 		} catch(e) {
 			console.log(e)
 		}
@@ -76,9 +83,10 @@ const PlayGo = () => {
 
 
 
-	const getAIPlayerMove = async (color, randomize) => {
+	const getAIPlayerMove = async () => {
 		try {
-			const endpoint = (randomize ? "/random-move/" : "/player-move/") + color;
+			// const endpoint = (randomize ? "/random-move/" + color: "/netplayer-move/");
+			const endpoint = "/netplayer-move";
 			const playerMove = await getAPI(endpoint);
 			if (playerMove === "pass") {
 				setSnackbarContent("White passes.");
@@ -86,26 +94,27 @@ const PlayGo = () => {
 			} else {
 				setCurrentMove([playerMove.x, playerMove.y]);
 			}
-			await fetchGameData()
+			return await fetchGameData()
 		} catch(e) {
 			console.log(e);
 		}
 	}
 
-	const onNewGameButton = () => {
-		const newGameCallback = () => {
-			try {
-				getAPI("/new-game")
-				fetchGameData()
-				setDialogOpen(false);
-				setSnackbarContent("Started New Game");
-				setSnackbarOpen(true);
-			} catch(e) {
-				console.log(e)
-			}
-		};
+	const newGameCallback = async () => {
+		try {
+			await getAPI("/new-game")
+			await fetchGameData()
+			setDialogOpen(false);
+			setSnackbarContent("Started New Game");
+			setSnackbarOpen(true);
+		} catch(e) {
+			console.log(e)
+		}
+	};
+
+	const onNewGameButton = async () => {
 		if (gameState.ended) {
-			newGameCallback();
+			await newGameCallback();
 		} else {
 			setDialogContent({
 				title: "Start a New Game",
@@ -254,7 +263,7 @@ const PlayGo = () => {
 						</Button>
 					</DialogActions>
 					</Dialog>
-					<Button variant="contained" onClick={autoPlay} sx={{position:"fixed", left:"2em", bottom:"2em"}}>Auto</Button>
+					<Button variant="contained" onClick={()=>autoPlay(3)} sx={{position:"fixed", left:"2em", bottom:"2em"}}>Auto</Button>
 		</>
 	);
 };
