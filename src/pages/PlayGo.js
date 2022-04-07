@@ -22,27 +22,26 @@ const PlayGo = () => {
 		fetchGameData()
 	}, []);
 
-	const autoPlay = (numGames) => {
-		console.log("auto play")
-		let auto = setInterval(()=>Loop(numGames), 500)
-		const Loop = async () => {
-			try {
-				setDialogOpen(false);
-				const game = await getAIPlayerMove();
-				if (game.ended) {
-					clearInterval(auto)
-					if (numGames > 0) {
-						console.log(numGames)
+	const autoPlay = async (numGames, trainInterval) => {
+		console.log("auto play");
+		while (true) {
+			const game = await fetchGameData()
+			if (game.ended) {
+				console.log(numGames)
+				numGames--
+				if (numGames <=0) {
+					break
+				} else {
+					if (numGames % trainInterval === 0) {
+						console.log("training AI players...")
 						await getAPI("/train-netplayer")
-						await newGameCallback()
-						auto = setInterval(()=>Loop(numGames-1), 500)
 					}
-				console.log("Game Over")
+					await newGameCallback()
 				}
-			} catch (error) {
-				console.log(error)
 			}
+			await getAIPlayerMove()
 		}
+		console.log("game over")
 }
 
 	const getAPI = async (endpoint) => {
@@ -263,7 +262,7 @@ const PlayGo = () => {
 						</Button>
 					</DialogActions>
 					</Dialog>
-					<Button variant="contained" onClick={()=>autoPlay(3)} sx={{position:"fixed", left:"2em", bottom:"2em"}}>Auto</Button>
+					<Button variant="contained" onClick={()=>autoPlay(50, 10)} sx={{position:"fixed", left:"2em", bottom:"2em"}}>Auto</Button>
 		</>
 	);
 };
