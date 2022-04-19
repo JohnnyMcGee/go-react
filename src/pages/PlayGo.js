@@ -22,28 +22,6 @@ const PlayGo = () => {
 		fetchGameData()
 	}, []);
 
-	const autoPlay = async (numGames, trainInterval) => {
-		console.log("auto play");
-		while (true) {
-			const game = await fetchGameData()
-			if (game.ended) {
-				console.log(numGames)
-				numGames--
-				if (numGames <=0) {
-					break
-				} else {
-					if (numGames % trainInterval === 0) {
-						console.log("training AI players...")
-						await getAPI("/train-netplayer")
-					}
-					await newGameCallback()
-				}
-			}
-			await getAIPlayerMove()
-		}
-		console.log("game over")
-}
-
 	const getAPI = async (endpoint) => {
 		let data;
 			const res = await fetch("http://localhost:8080" + endpoint);
@@ -76,28 +54,25 @@ const PlayGo = () => {
 					console.log(e);
 				}
 				await fetchGameData();
-				getAIPlayerMove("white", false);
 			}
 	};
 
-
-
-	const getAIPlayerMove = async () => {
-		try {
-			// const endpoint = (randomize ? "/random-move/" + color: "/netplayer-move/");
-			const endpoint = "/netplayer-move";
-			const playerMove = await getAPI(endpoint);
-			if (playerMove === "pass") {
-				setSnackbarContent("White passes.");
-				setSnackbarOpen(true);
-			} else {
-				setCurrentMove([playerMove.x, playerMove.y]);
-			}
-			return await fetchGameData()
-		} catch(e) {
-			console.log(e);
-		}
-	}
+	// const getAIPlayerMove = async () => {
+	// 	try {
+	// 		// const endpoint = (randomize ? "/random-move/" + color: "/netplayer-move/");
+	// 		const endpoint = "/netplayer-move";
+	// 		const playerMove = await getAPI(endpoint);
+	// 		if (playerMove === "pass") {
+	// 			setSnackbarContent("White passes.");
+	// 			setSnackbarOpen(true);
+	// 		} else {
+	// 			setCurrentMove([playerMove.x, playerMove.y]);
+	// 		}
+	// 		return await fetchGameData()
+	// 	} catch(e) {
+	// 		console.log(e);
+	// 	}
+	// }
 
 	const newGameCallback = async () => {
 		try {
@@ -130,7 +105,6 @@ const PlayGo = () => {
 				(async() => {
 					await getAPI("/pass")
 					await fetchGameData()
-					getAIPlayerMove("white", false);
 				})();
 				setDialogOpen(false);
 				setSnackbarContent(`${capitalize(gameState.turn)} passes`);
@@ -184,10 +158,6 @@ const PlayGo = () => {
 			return "Draw!";
 		}
 	}
-
-	// TODO: add buttons to return home, edit settings
-	// pretty up current point indicator
-	// scrolling with mouse hover?
 
 	return (
 		<>
@@ -262,7 +232,6 @@ const PlayGo = () => {
 						</Button>
 					</DialogActions>
 					</Dialog>
-					<Button variant="contained" onClick={()=>autoPlay(50, 10)} sx={{position:"fixed", left:"2em", bottom:"2em"}}>Auto</Button>
 		</>
 	);
 };
