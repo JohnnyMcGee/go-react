@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {Box, Fade, Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Backdrop, Snackbar, CircularProgress, Container, Typography, Stack} from "@mui/material";
+
 import Board from "../components/Board.js";
 import GameToolbar from "../components/GameToolbar.js";
+import {address} from "./config.js";
 
 const FadeTransition = (props) => <Fade {...props} timeout={{enter:1600, exit:450}}/>;
 const capitalize = (str) => `${str.slice(0,1).toUpperCase() + str.slice(1).toLowerCase()}`
+
 
 const PlayGo = () => {
 
@@ -24,7 +27,7 @@ const PlayGo = () => {
 
 	const getAPI = async (endpoint) => {
 		let data;
-			const res = await fetch("http://localhost:8080" + endpoint);
+			const res = await fetch(address + ":8080" + endpoint);
 			data = await res.json();
 		return data;
 	};
@@ -44,7 +47,7 @@ const PlayGo = () => {
 			if (!gameState.ended) {
 				const move = { x: point.x, y: point.y, color: gameState.turn }
 				try {
-					await fetch("http://localhost:8080/moves", {
+					await fetch(address + ":8080/moves", {
 						method: "POST",
 						headers: { "content-type": "application/json" },
 						body: JSON.stringify(move),
