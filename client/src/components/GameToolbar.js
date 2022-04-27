@@ -2,7 +2,6 @@ import React from 'react'
 
 import {AppBar, Toolbar, IconButton, Stack, Tooltip, Zoom} from "@mui/material";
 
-import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import FastForwardIcon from "@mui/icons-material/FastForward";
 import FlagRoundedIcon from "@mui/icons-material/FlagRounded";
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
@@ -15,24 +14,13 @@ const GameToolbar = ({score, turn, showTerritory, onNewGame, onPass, onResign, o
 	return (
 		<AppBar elevation={0} color="transparent">
 			<Toolbar>
-				<IconButton
-					size="large"
-					edge="start"
-					aria-label="menu"
-					sx={{ mr: 2, color:"rgb(245,245,245)",}}
-					>
-					<MenuRoundedIcon fontSize="large" />
-				</IconButton>
 				<Stack 
 					direction="row"
 					flexGrow={1}
-					justifyContent="space-evenly"
+					justifyContent="space-between"
 					sx={{
 						position: "absolute",
-						left:{
-							xs: "64px",
-							md: 0,
-						},
+						left:0,
 						right:0,
 						}}>
 					<Scoreboard 
@@ -61,7 +49,6 @@ const GameToolbar = ({score, turn, showTerritory, onNewGame, onPass, onResign, o
 								: <CastleOutlinedIcon fontSize="large"/>
 							}
 						</IconButton>
-
 					</Tooltip>
 					<Scoreboard 
 						color="black" 

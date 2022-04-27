@@ -17,6 +17,7 @@ const Scoreboard = ({color, score, turn}) => {
 			display:"grid",
 			gridTemplateColumns:"1fr 1fr",
 			columnGap:"1.5em",
+			alignItems:"center",
 		}}>
 		<Stone 
 		color={color}
