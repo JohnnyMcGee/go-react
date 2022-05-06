@@ -2,7 +2,7 @@ import React from 'react'
 
 import {Paper, Typography} from "@mui/material";
 
-import Stone from "./Stone.js";
+import Stone from "./Stone.jsx";
 
 
 const Scoreboard = ({color, score, turn}) => {

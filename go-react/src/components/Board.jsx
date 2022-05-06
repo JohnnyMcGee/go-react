@@ -2,7 +2,7 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import CircleIcon from "@mui/icons-material/Circle";
 import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 import { Paper, Box } from "@mui/material";
-import Stone from "../components/Stone.js";
+import Stone from "../components/Stone.jsx";
 import boardJPG from "../image/board.jpg";
 
 const Board = ({ board, turn, onPlayPoint, currentMove, showTerritory }) => {

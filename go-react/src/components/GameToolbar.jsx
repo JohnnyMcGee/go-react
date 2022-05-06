@@ -8,7 +8,7 @@ import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import CastleOutlinedIcon from '@mui/icons-material/CastleOutlined';
 import CastleRoundedIcon from '@mui/icons-material/CastleRounded';
 
-import Scoreboard from "../components/Scoreboard.js";
+import Scoreboard from "../components/Scoreboard.jsx";
 
 const GameToolbar = ({score, turn, showTerritory, onNewGame, onPass, onResign, onShowTerritory}) => {
 	return (

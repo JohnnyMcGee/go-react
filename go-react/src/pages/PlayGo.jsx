@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {Box, Fade, Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Backdrop, Snackbar, CircularProgress, Container, Typography, Stack} from "@mui/material";
 
-import Board from "../components/Board.js";
-import GameToolbar from "../components/GameToolbar.js";
+import Board from "../components/Board.jsx";
+import GameToolbar from "../components/GameToolbar.jsx";
 import {address} from "../config.js";
 
 const FadeTransition = (props) => <Fade {...props} timeout={{enter:1600, exit:450}}/>;
